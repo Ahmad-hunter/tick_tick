@@ -13,4 +13,33 @@ class AssignmentProvider with ChangeNotifier {
         subAssignments: []));
     notifyListeners();
   }
+
+  addSubAssignment(
+      String assignmebtType, int assignmentIndex, SubAssignment subAssignment) {
+    assignmebtType == "a"
+        ? assignments[assignmentIndex].subAssignments!.add(subAssignment)
+        : doneAssignments[assignmentIndex].subAssignments!.add(subAssignment);
+    notifyListeners();
+  }
+
+  updateSubAssignment(
+    String assignmebtType,
+    int assignmentIndex,
+    int subAssignmentIndex,
+  ) {
+    assignmebtType == "a"
+        ? assignments[assignmentIndex]
+                .subAssignments![subAssignmentIndex]
+                .subAssignmentDone =
+            !assignments[assignmentIndex]
+                .subAssignments![subAssignmentIndex]
+                .subAssignmentDone!
+        : doneAssignments[assignmentIndex]
+                .subAssignments![subAssignmentIndex]
+                .subAssignmentDone =
+            !doneAssignments[assignmentIndex]
+                .subAssignments![subAssignmentIndex]
+                .subAssignmentDone!;
+    notifyListeners();
+  }
 }

@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -14,18 +16,33 @@ class SubAssignmentsScreen extends StatefulWidget {
 
 class _SubAssignmentsScreenState extends State<SubAssignmentsScreen> {
   String? subTaskName = "";
-  String? subTaskDate;
+  String? subAssignmentDate;
   @override
   Widget build(BuildContext context) {
-    final assignmentIndex = ModalRoute.of(context)!.settings.arguments as int;
+    final AssignmentInfo assignmentInfo =
+        ModalRoute.of(context)!.settings.arguments as AssignmentInfo;
+
     return Consumer<AssignmentProvider>(builder: ((context, provider, child) {
       final TextEditingController controller = TextEditingController();
 
-      subTaskDate ??= DateFormat('yyyy-MM-dd').format(DateTime.now());
+      List<SubAssignment>? subAssignments = assignmentInfo.assignmentType == "a"
+          ? provider.assignments[assignmentInfo.assignmentIndex!.toInt()]
+              .subAssignments
+          : provider.doneAssignments[assignmentInfo.assignmentIndex!.toInt()]
+              .subAssignments;
+
+      String title = assignmentInfo.assignmentType == "a"
+          ? provider.assignments[assignmentInfo.assignmentIndex!.toInt()]
+              .assignmentName!
+          : provider.doneAssignments[assignmentInfo.assignmentIndex!.toInt()]
+              .assignmentName!;
+
+      subAssignmentDate ??= DateFormat('yyyy-MM-dd').format(DateTime.now());
+
       return Scaffold(
         resizeToAvoidBottomInset: false,
         appBar: AppBar(
-          title: Text(provider.assignments.length.toString()),
+          title: Text("Assignment info"),
         ),
         body: Container(
           decoration: BoxDecoration(
@@ -38,7 +55,7 @@ class _SubAssignmentsScreenState extends State<SubAssignmentsScreen> {
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 10),
                 child: Text(
-                  "Subtasks of ${provider.assignments[assignmentIndex].assignmentName!}",
+                  "SubAssignments of $title",
                   style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
@@ -53,6 +70,7 @@ class _SubAssignmentsScreenState extends State<SubAssignmentsScreen> {
                     SizedBox(
                         width: 150,
                         child: TextField(
+                          controller: controller,
                           onChanged: (value) {
                             subTaskName = value;
                           },
@@ -61,7 +79,7 @@ class _SubAssignmentsScreenState extends State<SubAssignmentsScreen> {
                         )),
                     Row(
                       children: [
-                        Text(subTaskDate!),
+                        Text(subAssignmentDate!),
                         IconButton(
                           onPressed: (() async {
                             DateTime? pickedDate = await showDatePicker(
@@ -71,7 +89,7 @@ class _SubAssignmentsScreenState extends State<SubAssignmentsScreen> {
                                 lastDate: DateTime(2100));
 
                             setState(() {
-                              subTaskDate =
+                              subAssignmentDate =
                                   DateFormat('yyyy-MM-dd').format(pickedDate!);
                             });
                           }),
@@ -81,18 +99,18 @@ class _SubAssignmentsScreenState extends State<SubAssignmentsScreen> {
                     ),
                     IconButton(
                         onPressed: (() {
-                          FocusScope.of(context).unfocus();
                           controller.clear();
-                          setState(() {
-                            provider
-                                .assignments[assignmentIndex].subAssignments!
-                                .add(SubAssignment(
-                                    subAssignmentName: subTaskName == ""
-                                        ? "unnamed task"
-                                        : subTaskName,
-                                    subAssignmentDate: subTaskDate,
-                                    subAssignmentDone: false));
-                          });
+                          FocusScope.of(context).unfocus();
+                          SubAssignment subAssignment = SubAssignment(
+                              subAssignmentName: subTaskName == ""
+                                  ? "unnamed task"
+                                  : subTaskName,
+                              subAssignmentDate: subAssignmentDate,
+                              subAssignmentDone: false);
+                          provider.addSubAssignment(
+                              assignmentInfo.assignmentType.toString(),
+                              assignmentInfo.assignmentIndex!.toInt(),
+                              subAssignment);
                         }),
                         icon: const Icon(Icons.add_box))
                   ],
@@ -102,52 +120,40 @@ class _SubAssignmentsScreenState extends State<SubAssignmentsScreen> {
                 flex: 1,
                 child: SizedBox(
                   child: ListView.builder(
-                    itemCount: provider
-                        .assignments[assignmentIndex].subAssignments?.length,
+                    itemCount: assignmentInfo.assignmentType == "a"
+                        ? provider.assignments[assignmentInfo.assignmentIndex!]
+                            .subAssignments?.length
+                        : provider
+                            .doneAssignments[assignmentInfo.assignmentIndex!]
+                            .subAssignments
+                            ?.length,
                     itemBuilder: (context, index) {
                       return ListTile(
                           leading: IconButton(
                               icon: const Icon(Icons.check_box),
                               onPressed: () {
-                                setState(() {
-                                  provider
-                                          .assignments[assignmentIndex]
-                                          .subAssignments?[index]
-                                          .subAssignmentDone =
-                                      !provider
-                                          .assignments[assignmentIndex]
-                                          .subAssignments![index]
-                                          .subAssignmentDone!;
-                                });
+                                provider.updateSubAssignment(
+                                    assignmentInfo.assignmentType.toString(),
+                                    assignmentInfo.assignmentIndex!.toInt(),
+                                    index);
                               },
-                              color: provider
-                                          .assignments[assignmentIndex]
-                                          .subAssignments?[index]
-                                          .subAssignmentDone ==
+                              color: subAssignments?[index].subAssignmentDone ==
                                       false
                                   ? const Color.fromARGB(255, 0, 8, 12)
                                   : const Color.fromARGB(255, 156, 168, 173)),
                           trailing: Text(
-                            (provider.assignments[assignmentIndex]
-                                    .subAssignments?[index].subAssignmentDate)
-                                .toString(),
+                            subAssignments![index].subAssignmentDate.toString(),
                             style: TextStyle(
-                                color: provider
-                                            .assignments[assignmentIndex]
-                                            .subAssignments?[index]
+                                color: subAssignments[index]
                                             .subAssignmentDone ==
                                         false
                                     ? const Color.fromARGB(255, 209, 37, 6)
                                     : const Color.fromARGB(255, 156, 168, 173)),
                           ),
                           title: Text(
-                            (provider.assignments[assignmentIndex]
-                                    .subAssignments?[index].subAssignmentName)
-                                .toString(),
+                            subAssignments[index].subAssignmentName.toString(),
                             style: TextStyle(
-                                color: provider
-                                            .assignments[assignmentIndex]
-                                            .subAssignments?[index]
+                                color: subAssignments[index]
                                             .subAssignmentDone ==
                                         false
                                     ? const Color.fromARGB(255, 0, 8, 12)

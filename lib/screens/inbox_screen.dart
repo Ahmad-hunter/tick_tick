@@ -4,6 +4,8 @@ import 'package:provider/provider.dart';
 import 'package:tick_tick_app/provider/assignments_provider.dart';
 import 'package:tick_tick_app/screens/sub_assignments.dart';
 
+import '../models/assignment.dart';
+
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
 
@@ -52,13 +54,17 @@ class _MyHomePageState extends State<MyHomePage> {
                                     .assignments[index].subAssignments?.length);
                                 return ListTile(
                                     onTap: () {
+                                      AssignmentInfo assignmentInfo =
+                                          AssignmentInfo();
+                                      assignmentInfo.assignmentIndex = index;
+                                      assignmentInfo.assignmentType = "a";
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
                                           builder: (context) =>
                                               const SubAssignmentsScreen(),
                                           settings: RouteSettings(
-                                            arguments: index,
+                                            arguments: assignmentInfo,
                                           ),
                                         ),
                                       );
@@ -110,16 +116,21 @@ class _MyHomePageState extends State<MyHomePage> {
                                         int index) =>
                                     ListTile(
                                         onTap: () {
+                                          AssignmentInfo assignmentInfo =
+                                              AssignmentInfo();
+                                          assignmentInfo.assignmentIndex =
+                                              index;
+                                          assignmentInfo.assignmentType = "c";
                                           Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) =>
-                                              const SubAssignmentsScreen(),
-                                          settings: RouteSettings(
-                                            arguments: index,
-                                          ),
-                                        ),
-                                      );
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  const SubAssignmentsScreen(),
+                                              settings: RouteSettings(
+                                                arguments: assignmentInfo,
+                                              ),
+                                            ),
+                                          );
                                         },
                                         leading: IconButton(
                                             icon: const Icon(Icons.check_box),

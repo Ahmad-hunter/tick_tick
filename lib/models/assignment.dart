@@ -18,3 +18,13 @@ class SubAssignment {
   SubAssignment(
       {this.subAssignmentName, this.subAssignmentDate, this.subAssignmentDone});
 }
+
+class AssignmentInfo {
+  String? assignmentType;
+  int? assignmentIndex;
+
+  AssignmentInfo({
+    this.assignmentType,
+    this.assignmentIndex,
+  });
+}
