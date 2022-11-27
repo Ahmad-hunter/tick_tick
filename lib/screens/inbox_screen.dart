@@ -22,6 +22,7 @@ class _MyHomePageState extends State<MyHomePage> {
     double height = MediaQuery.of(context).size.height;
     return Consumer<AssignmentProvider>(builder: ((context, provider, child) {
       return Scaffold(
+          drawer: Drawer(),
           resizeToAvoidBottomInset: false,
           appBar: AppBar(
             title: Text("Inbox"),
@@ -205,7 +206,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             SizedBox(
                                 child: TextField(
@@ -219,9 +220,17 @@ class _MyHomePageState extends State<MyHomePage> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
+                                IconButton(
+                                    iconSize: 30,
+                                    color: Colors.blueAccent,
+                                    onPressed: () {
+                                      provider.addAssignment(
+                                          assignmentName!, assignmentDate);
+
+                                      Navigator.of(context).pop();
+                                    },
+                                    icon: Icon(Icons.send_outlined)),
                                 Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
                                   children: [
                                     IconButton(
                                       onPressed: (() async {
@@ -243,21 +252,6 @@ class _MyHomePageState extends State<MyHomePage> {
                                     SizedBox(
                                         width: 200,
                                         child: Text(assignmentDate!)),
-                                  ],
-                                ),
-                                Row(
-                                  children: [
-                                    IconButton(
-                                        iconSize: 30,
-                                        color: Colors.blueAccent,
-                                        onPressed: () {
-                                          provider.addAssignment(
-                                              assignmentName!, assignmentDate);
-
-                                          Navigator.of(context).pop();
-                                        },
-                                        icon: Icon(
-                                            Icons.add_circle_outline_rounded)),
                                   ],
                                 ),
                               ],

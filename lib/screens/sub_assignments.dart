@@ -112,7 +112,7 @@ class _SubAssignmentsScreenState extends State<SubAssignmentsScreen> {
                               assignmentInfo.assignmentIndex!.toInt(),
                               subAssignment);
                         }),
-                        icon: const Icon(Icons.add_box))
+                        icon: const Icon(Icons.send_outlined))
                   ],
                 ),
               ),
