@@ -21,7 +21,7 @@ class _SubAssignmentsScreenState extends State<SubAssignmentsScreen> {
   Widget build(BuildContext context) {
     final AssignmentInfo assignmentInfo =
         ModalRoute.of(context)!.settings.arguments as AssignmentInfo;
-
+    double width = MediaQuery.of(context).size.width;
     return Consumer<AssignmentProvider>(builder: ((context, provider, child) {
       final TextEditingController controller = TextEditingController();
 
@@ -49,7 +49,7 @@ class _SubAssignmentsScreenState extends State<SubAssignmentsScreen> {
               color: Theme.of(context).canvasColor,
               borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(30), topRight: Radius.circular(30))),
-          width: MediaQuery.of(context).size.width - 20,
+          width: width - 20,
           child: Column(
             children: [
               Padding(
@@ -61,6 +61,35 @@ class _SubAssignmentsScreenState extends State<SubAssignmentsScreen> {
                       fontWeight: FontWeight.bold,
                       color: Colors.blue),
                 ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 15),
+                child: SizedBox(
+                    width: width,
+                    child: TextFormField(
+                      initialValue: assignmentInfo.assignmentType == "c"
+                          ? provider
+                              .doneAssignments[assignmentInfo.assignmentIndex!]
+                              .assignmentDescreption
+                          : provider
+                              .assignments[assignmentInfo.assignmentIndex!]
+                              .assignmentDescreption,
+                      onChanged: (value) {
+                        if (assignmentInfo.assignmentType == "c") {
+                          provider
+                              .doneAssignments[assignmentInfo.assignmentIndex!]
+                              .assignmentDescreption = value;
+                        }
+                        provider.assignments[assignmentInfo.assignmentIndex!]
+                            .assignmentDescreption = value;
+                        print("changed");
+                      },
+                      decoration: const InputDecoration(
+                          hintText: "Assignment Descreption"),
+                    )),
+              ),
+              SizedBox(
+                height: 10,
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 15),

@@ -10,6 +10,7 @@ class AssignmentProvider with ChangeNotifier {
         assignmentName:
             assignmentName == "" ? "Unnamed Assignment" : assignmentName,
         assignmentDate: assignmentDate,
+        assignmentDescreption: "Assignment Descreption",
         subAssignments: []));
     notifyListeners();
   }

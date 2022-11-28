@@ -2,11 +2,13 @@ class Assignment {
   String? assignmentName;
   String? assignmentDate;
   bool? assignmentDone;
+  String? assignmentDescreption;
   List<SubAssignment>? subAssignments;
   Assignment(
       {this.assignmentName,
       this.assignmentDate,
       this.assignmentDone,
+      this.assignmentDescreption,
       this.subAssignments});
 }
 

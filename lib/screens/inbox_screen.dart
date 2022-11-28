@@ -31,141 +31,165 @@ class _MyHomePageState extends State<MyHomePage> {
             color: Color.fromARGB(255, 156, 168, 173),
             height: height,
             width: width,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: Container(
-                    color: Colors.white,
-                    width: width,
-                    height: 45 + (provider.assignments.length.toDouble() * 50),
-                    child: Column(
-                      children: [
-                        const Text(
-                          "Assignments",
-                          style: TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.bold),
-                        ),
-                        Expanded(
-                          child: ListView.builder(
-                              itemCount: provider.assignments.length,
-                              itemBuilder: (BuildContext context, int index) {
-                                print(provider
-                                    .assignments[index].subAssignments?.length);
-                                return ListTile(
-                                    onTap: () {
-                                      AssignmentInfo assignmentInfo =
-                                          AssignmentInfo();
-                                      assignmentInfo.assignmentIndex = index;
-                                      assignmentInfo.assignmentType = "a";
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) =>
-                                              const SubAssignmentsScreen(),
-                                          settings: RouteSettings(
-                                            arguments: assignmentInfo,
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                    leading: IconButton(
-                                      icon: const Icon(
-                                          Icons.check_box_outline_blank),
-                                      onPressed: () {
-                                        provider.doneAssignments
-                                            .add(provider.assignments[index]);
-                                        provider.assignments.removeAt(index);
-                                        setState(() {});
-                                      },
-                                    ),
-                                    trailing: Text(
-                                      provider
-                                          .assignments[index].assignmentDate!,
-                                      style: const TextStyle(
-                                          color: Colors.blue, fontSize: 15),
-                                    ),
-                                    title: Text(provider
-                                        .assignments[index].assignmentName!));
-                              }),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                Visibility(
-                  visible: true,
-                  child: Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: Container(
-                      color: Colors.white,
-                      width: width,
-                      height: 45 +
-                          (provider.doneAssignments.length.toDouble() * 50),
-                      child: Column(
-                        children: [
-                          const Text(
-                            "Completed",
-                            style: TextStyle(
-                                fontSize: 20, fontWeight: FontWeight.bold),
-                          ),
-                          Expanded(
-                            child: ListView.builder(
-                                itemCount: provider.doneAssignments.length,
-                                itemBuilder: (BuildContext context,
-                                        int index) =>
-                                    ListTile(
-                                        onTap: () {
-                                          AssignmentInfo assignmentInfo =
-                                              AssignmentInfo();
-                                          assignmentInfo.assignmentIndex =
-                                              index;
-                                          assignmentInfo.assignmentType = "c";
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) =>
-                                                  const SubAssignmentsScreen(),
-                                              settings: RouteSettings(
-                                                arguments: assignmentInfo,
-                                              ),
-                                            ),
-                                          );
-                                        },
-                                        leading: IconButton(
-                                            icon: const Icon(Icons.check_box),
-                                            onPressed: () {
-                                              provider.assignments.add(provider
-                                                  .doneAssignments[index]);
-                                              provider.doneAssignments
-                                                  .removeAt(index);
-                                              setState(() {});
+            child: provider.assignments.isEmpty &&
+                    provider.doneAssignments.isEmpty
+                ? const Center(
+                    child: Text("No Assignments yet"),
+                  )
+                : Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      Visibility(
+                        visible: provider.assignments.isNotEmpty ? true : false,
+                        child: Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: Container(
+                            color: Colors.white,
+                            width: width,
+                            height: 45 +
+                                (provider.assignments.length.toDouble() * 50),
+                            child: Column(
+                              children: [
+                                const Text(
+                                  "Assignments",
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                Expanded(
+                                  child: ListView.builder(
+                                      itemCount: provider.assignments.length,
+                                      itemBuilder:
+                                          (BuildContext context, int index) {
+                                        print(provider.assignments[index]
+                                            .subAssignments?.length);
+                                        return ListTile(
+                                            onTap: () {
+                                              AssignmentInfo assignmentInfo =
+                                                  AssignmentInfo();
+                                              assignmentInfo.assignmentIndex =
+                                                  index;
+                                              assignmentInfo.assignmentType =
+                                                  "a";
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      const SubAssignmentsScreen(),
+                                                  settings: RouteSettings(
+                                                    arguments: assignmentInfo,
+                                                  ),
+                                                ),
+                                              );
                                             },
-                                            color: const Color.fromARGB(
-                                                255, 156, 168, 173)),
-                                        trailing: Text(
-                                          provider.doneAssignments[index]
-                                              .assignmentDate!,
-                                          style: const TextStyle(
-                                              color: Color.fromARGB(
-                                                  255, 156, 168, 173)),
-                                        ),
-                                        title: Text(
-                                          provider.doneAssignments[index]
-                                              .assignmentName!,
-                                          style: const TextStyle(
-                                              color: Color.fromARGB(
-                                                  255, 156, 168, 173)),
-                                        ))),
+                                            leading: IconButton(
+                                              icon: const Icon(Icons
+                                                  .check_box_outline_blank),
+                                              onPressed: () {
+                                                provider.doneAssignments.add(
+                                                    provider
+                                                        .assignments[index]);
+                                                provider.assignments
+                                                    .removeAt(index);
+                                                setState(() {});
+                                              },
+                                            ),
+                                            trailing: Text(
+                                              provider.assignments[index]
+                                                  .assignmentDate!,
+                                              style: const TextStyle(
+                                                  color: Colors.blue,
+                                                  fontSize: 15),
+                                            ),
+                                            title: Text(provider
+                                                .assignments[index]
+                                                .assignmentName!));
+                                      }),
+                                ),
+                              ],
+                            ),
                           ),
-                        ],
+                        ),
                       ),
-                    ),
+                      Visibility(
+                        visible:
+                            provider.doneAssignments.isNotEmpty ? true : false,
+                        child: Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: Container(
+                            color: Colors.white,
+                            width: width,
+                            height: 45 +
+                                (provider.doneAssignments.length.toDouble() *
+                                    50),
+                            child: Column(
+                              children: [
+                                const Text(
+                                  "Completed",
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                Expanded(
+                                  child: ListView.builder(
+                                      itemCount:
+                                          provider.doneAssignments.length,
+                                      itemBuilder: (BuildContext context,
+                                              int index) =>
+                                          ListTile(
+                                              onTap: () {
+                                                AssignmentInfo assignmentInfo =
+                                                    AssignmentInfo();
+                                                assignmentInfo.assignmentIndex =
+                                                    index;
+                                                assignmentInfo.assignmentType =
+                                                    "c";
+                                                Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        const SubAssignmentsScreen(),
+                                                    settings: RouteSettings(
+                                                      arguments: assignmentInfo,
+                                                    ),
+                                                  ),
+                                                );
+                                              },
+                                              leading: IconButton(
+                                                  icon: const Icon(
+                                                      Icons.check_box),
+                                                  onPressed: () {
+                                                    provider.assignments.add(
+                                                        provider.doneAssignments[
+                                                            index]);
+                                                    provider.doneAssignments
+                                                        .removeAt(index);
+                                                    setState(() {});
+                                                  },
+                                                  color: const Color.fromARGB(
+                                                      255, 156, 168, 173)),
+                                              trailing: Text(
+                                                provider.doneAssignments[index]
+                                                    .assignmentDate!,
+                                                style: const TextStyle(
+                                                    color: Color.fromARGB(
+                                                        255, 156, 168, 173)),
+                                              ),
+                                              title: Text(
+                                                provider.doneAssignments[index]
+                                                    .assignmentName!,
+                                                style: const TextStyle(
+                                                    color: Color.fromARGB(
+                                                        255, 156, 168, 173)),
+                                              ))),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-              ],
-            ),
           ),
           floatingActionButton: FloatingActionButton(
             onPressed: () {
