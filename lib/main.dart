@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:tick_tick_app/provider/assignments_provider.dart';
+import 'package:tick_tick_app/Back%20End/assignments_provider.dart';
 
 import 'screens/inbox_screen.dart';
 
@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const HomePage(title: 'Inbox'),
     );
   }
 }

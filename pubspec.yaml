@@ -31,13 +31,10 @@ environment:
 dependencies:
   modal_bottom_sheet: ^2.1.2
   intl: ^0.17.0
+  sqflite: ^2.2.2
   provider: ^6.0.4
   flutter:
     sdk: flutter
-
-
-  # The following adds the Cupertino Icons font to your application.
-  # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
 
 dev_dependencies:

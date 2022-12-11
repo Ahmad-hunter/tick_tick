@@ -1,206 +1,400 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:tick_tick_app/provider/assignments_provider.dart';
+import 'package:tick_tick_app/Back%20End/assignments_provider.dart';
 import 'package:tick_tick_app/screens/sub_assignments.dart';
-
 import '../models/assignment.dart';
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
+class HomePage extends StatefulWidget {
+  const HomePage({super.key, required this.title});
 
   final String title;
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<HomePage> createState() => _HomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
-    return Consumer<AssignmentProvider>(builder: ((context, provider, child) {
-      return Scaffold(
-          drawer: Drawer(),
-          resizeToAvoidBottomInset: false,
-          appBar: AppBar(
-            title: Text("Inbox"),
-          ),
-          body: Container(
-            color: Color.fromARGB(255, 156, 168, 173),
-            height: height,
-            width: width,
-            child: provider.assignments.isEmpty &&
-                    provider.doneAssignments.isEmpty
-                ? const Center(
-                    child: Text("No Assignments yet"),
-                  )
-                : Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
+    return FutureBuilder(
+        future:
+            Provider.of<AssignmentProvider>(context, listen: false).loadData(),
+        builder: (context, snapshot) {
+          return Consumer<AssignmentProvider>(
+              builder: ((context, provider, child) {
+            int assigmentsCount = 0;
+            int completedAssigmentsCount = 0;
+            for (var assigment in provider.assignments) {
+              if (assigment.assignmentCategory == widget.title) {
+                if (assigment.assignmentDone == false) {
+                  assigmentsCount += 1;
+                } else {
+                  completedAssigmentsCount += 1;
+                }
+              }
+            }
+
+            return Scaffold(
+                drawer: Drawer(
+                  backgroundColor: Color.fromARGB(255, 150, 147, 147),
+                  child: ListView(
+                    padding: EdgeInsets.zero,
                     children: <Widget>[
-                      Visibility(
-                        visible: provider.assignments.isNotEmpty ? true : false,
-                        child: Padding(
-                          padding: const EdgeInsets.all(10.0),
-                          child: Container(
-                            color: Colors.white,
-                            width: width,
-                            height: 45 +
-                                (provider.assignments.length.toDouble() * 50),
-                            child: Column(
-                              children: [
-                                const Text(
-                                  "Assignments",
-                                  style: TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                                Expanded(
-                                  child: ListView.builder(
-                                      itemCount: provider.assignments.length,
-                                      itemBuilder:
-                                          (BuildContext context, int index) {
-                                        print(provider.assignments[index]
-                                            .subAssignments?.length);
-                                        return ListTile(
-                                            onTap: () {
-                                              AssignmentInfo assignmentInfo =
-                                                  AssignmentInfo();
-                                              assignmentInfo.assignmentIndex =
-                                                  index;
-                                              assignmentInfo.assignmentType =
-                                                  "a";
-                                              Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      const SubAssignmentsScreen(),
-                                                  settings: RouteSettings(
-                                                    arguments: assignmentInfo,
-                                                  ),
-                                                ),
-                                              );
-                                            },
-                                            leading: IconButton(
-                                              icon: const Icon(Icons
-                                                  .check_box_outline_blank),
-                                              onPressed: () {
-                                                provider.doneAssignments.add(
-                                                    provider
-                                                        .assignments[index]);
-                                                provider.assignments
-                                                    .removeAt(index);
-                                                setState(() {});
-                                              },
-                                            ),
-                                            trailing: Text(
-                                              provider.assignments[index]
-                                                  .assignmentDate!,
-                                              style: const TextStyle(
-                                                  color: Colors.blue,
-                                                  fontSize: 15),
-                                            ),
-                                            title: Text(provider
-                                                .assignments[index]
-                                                .assignmentName!));
-                                      }),
-                                ),
-                              ],
-                            ),
+                      Container(
+                        height: 100,
+                        child: DrawerHeader(
+                          decoration: BoxDecoration(
+                            color: Colors.blueAccent,
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(
+                                children: const [
+                                  Icon(
+                                    Icons.person_pin,
+                                    size: 30,
+                                  ),
+                                  SizedBox(
+                                    width: 15,
+                                  ),
+                                  Text(
+                                    'Welcome : ',
+                                    style: TextStyle(
+                                        fontSize: 25,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                children: const [
+                                  Icon(
+                                    Icons.settings_outlined,
+                                    color: Colors.white,
+                                  ),
+                                  SizedBox(
+                                    width: 15,
+                                  ),
+                                  Icon(
+                                    Icons.search,
+                                    color: Colors.white,
+                                  ),
+                                ],
+                              )
+                            ],
                           ),
                         ),
                       ),
-                      Visibility(
-                        visible:
-                            provider.doneAssignments.isNotEmpty ? true : false,
-                        child: Padding(
-                          padding: const EdgeInsets.all(10.0),
-                          child: Container(
-                            color: Colors.white,
-                            width: width,
-                            height: 45 +
-                                (provider.doneAssignments.length.toDouble() *
-                                    50),
-                            child: Column(
-                              children: [
-                                const Text(
-                                  "Completed",
-                                  style: TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold),
+                      Container(
+                        height: height - 100,
+                        child: Expanded(
+                          flex: 1,
+                          child: ListView(children: [
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 10, horizontal: 5),
+                              child: ListTile(
+                                title: Text(
+                                  "Today",
+                                  style: TextStyle(color: Colors.white),
                                 ),
-                                Expanded(
-                                  child: ListView.builder(
-                                      itemCount:
-                                          provider.doneAssignments.length,
-                                      itemBuilder: (BuildContext context,
-                                              int index) =>
-                                          ListTile(
-                                              onTap: () {
-                                                AssignmentInfo assignmentInfo =
-                                                    AssignmentInfo();
-                                                assignmentInfo.assignmentIndex =
-                                                    index;
-                                                assignmentInfo.assignmentType =
-                                                    "c";
-                                                Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        const SubAssignmentsScreen(),
-                                                    settings: RouteSettings(
-                                                      arguments: assignmentInfo,
-                                                    ),
-                                                  ),
-                                                );
-                                              },
-                                              leading: IconButton(
-                                                  icon: const Icon(
-                                                      Icons.check_box),
-                                                  onPressed: () {
-                                                    provider.assignments.add(
-                                                        provider.doneAssignments[
-                                                            index]);
-                                                    provider.doneAssignments
-                                                        .removeAt(index);
-                                                    setState(() {});
-                                                  },
-                                                  color: const Color.fromARGB(
-                                                      255, 156, 168, 173)),
-                                              trailing: Text(
-                                                provider.doneAssignments[index]
-                                                    .assignmentDate!,
-                                                style: const TextStyle(
-                                                    color: Color.fromARGB(
-                                                        255, 156, 168, 173)),
-                                              ),
-                                              title: Text(
-                                                provider.doneAssignments[index]
-                                                    .assignmentName!,
-                                                style: const TextStyle(
-                                                    color: Color.fromARGB(
-                                                        255, 156, 168, 173)),
-                                              ))),
-                                ),
-                              ],
+                                leading: Icon(Icons.today),
+                                iconColor: Colors.white,
+                                onTap: () {
+                                  Navigator.pop(context);
+                                  Navigator.pop(context);
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          HomePage(title: "Today"),
+                                    ),
+                                  );
+                                },
+                              ),
                             ),
-                          ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 10, horizontal: 5),
+                              child: ListTile(
+                                title: Text(
+                                  "Inbox",
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                                leading: Icon(Icons.inbox),
+                                iconColor: Colors.white,
+                                onTap: () {
+                                  Navigator.pop(context);
+                                  Navigator.pop(context);
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          HomePage(title: "InBox"),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 10, horizontal: 5),
+                              child: ListTile(
+                                title: Text(
+                                  "Work",
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                                leading: Icon(Icons.work),
+                                iconColor: Colors.white,
+                                onTap: () {
+                                  Navigator.pop(context);
+                                  Navigator.pop(context);
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          HomePage(title: "Work"),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 10, horizontal: 5),
+                              child: ListTile(
+                                title: Text(
+                                  "Personal",
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                                leading: Icon(Icons.home),
+                                iconColor: Colors.white,
+                                onTap: () {
+                                  Navigator.pop(context);
+                                  Navigator.pop(context);
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          HomePage(title: "Personal"),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                          ]),
                         ),
                       ),
                     ],
                   ),
-          ),
-          floatingActionButton: FloatingActionButton(
-            onPressed: () {
-              addAssignment();
-            },
-            tooltip: 'Add Assignment',
-            child: const Icon(
-              Icons.add,
-            ),
-          ));
-    }));
+                ),
+                resizeToAvoidBottomInset: false,
+                appBar: AppBar(
+                  title: Text(widget.title),
+                ),
+                body: Container(
+                  color: Color.fromARGB(255, 156, 168, 173),
+                  height: height,
+                  width: width,
+                  child: assigmentsCount + completedAssigmentsCount == 0
+                      ? const Center(
+                          child: Text("No Assignments yet"),
+                        )
+                      : Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: <Widget>[
+                            Visibility(
+                              visible: assigmentsCount == 0 ? false : true,
+                              child: Padding(
+                                padding: const EdgeInsets.all(10.0),
+                                child: Container(
+                                  color: Colors.white,
+                                  width: width,
+                                  height:
+                                      45 + (assigmentsCount.toDouble() * 50),
+                                  child: Column(
+                                    children: [
+                                      const Text(
+                                        "Assignments",
+                                        style: TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      Expanded(
+                                        child: ListView.builder(
+                                            itemCount: assigmentsCount,
+                                            itemBuilder: (BuildContext context,
+                                                int index) {
+                                              List<Assignment> assignments = [];
+                                              for (var i
+                                                  in provider.assignments) {
+                                                if (i.assignmentCategory ==
+                                                    widget.title) {
+                                                  if (i.assignmentDone ==
+                                                      false) {
+                                                    assignments.add(i);
+                                                  }
+                                                }
+                                              }
+
+                                              return ListTile(
+                                                  onLongPress: () =>
+                                                      deleteAssignment(
+                                                          assignments[index]
+                                                              .id!),
+                                                  onTap: () {
+                                                    Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            const SubAssignmentsScreen(),
+                                                        settings: RouteSettings(
+                                                          arguments:
+                                                              assignments[
+                                                                  index],
+                                                        ),
+                                                      ),
+                                                    );
+                                                  },
+                                                  leading: IconButton(
+                                                    icon: const Icon(Icons
+                                                        .check_box_outline_blank),
+                                                    onPressed: () {
+                                                      provider.updateAssignment(
+                                                          provider.assignments[
+                                                              index]);
+                                                    },
+                                                  ),
+                                                  trailing: Text(
+                                                    assignments[index]
+                                                        .assignmentDate!,
+                                                    style: const TextStyle(
+                                                        color: Colors.blue,
+                                                        fontSize: 15),
+                                                  ),
+                                                  title: Text(assignments[index]
+                                                      .assignmentName!));
+                                            }),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Visibility(
+                              visible:
+                                  completedAssigmentsCount == 0 ? false : true,
+                              child: Padding(
+                                padding: const EdgeInsets.all(10.0),
+                                child: Container(
+                                  color: Colors.white,
+                                  width: width,
+                                  height: 45 +
+                                      (completedAssigmentsCount.toDouble() *
+                                          50),
+                                  child: Column(
+                                    children: [
+                                      const Text(
+                                        "Completed",
+                                        style: TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      Expanded(
+                                          child: ListView.builder(
+                                              itemCount:
+                                                  completedAssigmentsCount,
+                                              itemBuilder:
+                                                  (BuildContext context,
+                                                      int index) {
+                                                List<Assignment>
+                                                    doneAssignments = [];
+                                                for (var i
+                                                    in provider.assignments) {
+                                                  if (i.assignmentCategory ==
+                                                      widget.title) {
+                                                    if (i.assignmentDone ==
+                                                        true) {
+                                                      doneAssignments.add(i);
+                                                    }
+                                                  }
+                                                }
+                                                return ListTile(
+                                                    onLongPress: () =>
+                                                        deleteAssignment(
+                                                            doneAssignments[
+                                                                    index]
+                                                                .id!),
+                                                    onTap: () {
+                                                      Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                          builder: (context) =>
+                                                              const SubAssignmentsScreen(),
+                                                          settings:
+                                                              RouteSettings(
+                                                            arguments:
+                                                                doneAssignments[
+                                                                    index],
+                                                          ),
+                                                        ),
+                                                      );
+                                                    },
+                                                    leading: IconButton(
+                                                        icon: const Icon(
+                                                            Icons.check_box),
+                                                        onPressed: () {
+                                                          provider
+                                                              .updateAssignment(
+                                                                  doneAssignments[
+                                                                      index]);
+                                                        },
+                                                        color: const Color
+                                                                .fromARGB(255,
+                                                            156, 168, 173)),
+                                                    trailing: Text(
+                                                      doneAssignments[index]
+                                                          .assignmentDate!,
+                                                      style: const TextStyle(
+                                                          color: Color.fromARGB(
+                                                              255,
+                                                              156,
+                                                              168,
+                                                              173)),
+                                                    ),
+                                                    title: Text(
+                                                      doneAssignments[index]
+                                                          .assignmentName!,
+                                                      style: const TextStyle(
+                                                          color: Color.fromARGB(
+                                                              255,
+                                                              156,
+                                                              168,
+                                                              173)),
+                                                    ));
+                                              })),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                ),
+                floatingActionButton: FloatingActionButton(
+                  onPressed: () {
+                    addAssignment();
+                  },
+                  tooltip: 'Add Assignment',
+                  child: const Icon(
+                    Icons.add,
+                  ),
+                ));
+          }));
+        });
   }
 
   addAssignment() {
@@ -248,9 +442,15 @@ class _MyHomePageState extends State<MyHomePage> {
                                     iconSize: 30,
                                     color: Colors.blueAccent,
                                     onPressed: () {
-                                      provider.addAssignment(
-                                          assignmentName!, assignmentDate);
-
+                                      provider.addAssignment(Assignment(
+                                          assignmentName: assignmentName == ""
+                                              ? "Assignment"
+                                              : assignmentName,
+                                          assignmentDate: assignmentDate,
+                                          assignmentDescreption: "Descreption",
+                                          assignmentCategory: widget.title,
+                                          assignmentDone: false));
+                                      super.setState(() {});
                                       Navigator.of(context).pop();
                                     },
                                     icon: Icon(Icons.send_outlined)),
@@ -282,6 +482,92 @@ class _MyHomePageState extends State<MyHomePage> {
                             ),
                           ],
                         ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            );
+          });
+        }));
+  }
+
+  deleteAssignment(int id) {
+    showModalBottomSheet(
+        isScrollControlled: true,
+        context: context,
+        builder: ((context) {
+          return Consumer<AssignmentProvider>(
+              builder: (context, provider, child) {
+            return Padding(
+              padding: MediaQuery.of(context).viewInsets,
+              child: Container(
+                color: Color.fromARGB(255, 85, 79, 79),
+                child: Container(
+                  decoration: BoxDecoration(
+                      color: Theme.of(context).canvasColor,
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(30),
+                        topRight: Radius.circular(30),
+                        bottomLeft: Radius.circular(30),
+                        bottomRight: Radius.circular(30),
+                      )),
+                  width: MediaQuery.of(context).size.width - 20,
+                  child: Container(
+                    color: Colors.black,
+                    height: 70,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            "DELETE ASSIGNMENT? ",
+                            style: TextStyle(color: Colors.white),
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              GestureDetector(
+                                onTap: () {
+                                  provider.deleteAssignment(id);
+                                  super.setState(() {});
+                                  Navigator.pop(context);
+                                },
+                                child: Row(
+                                  children: [
+                                    Text(
+                                      "YES",
+                                      style: TextStyle(color: Colors.red),
+                                    ),
+                                    Icon(
+                                      Icons.delete_forever_outlined,
+                                      color: Colors.red,
+                                    )
+                                  ],
+                                ),
+                              ),
+                              SizedBox(
+                                width: 30,
+                              ),
+                              GestureDetector(
+                                onTap: () => Navigator.pop(context),
+                                child: Row(
+                                  children: [
+                                    Text(
+                                      "NO",
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                    Icon(
+                                      Icons.delete_forever_outlined,
+                                      color: Colors.white,
+                                    )
+                                  ],
+                                ),
+                              )
+                            ],
+                          ),
+                        ],
                       ),
                     ),
                   ),
