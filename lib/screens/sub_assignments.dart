@@ -132,7 +132,10 @@ class _SubAssignmentsScreenState extends State<SubAssignmentsScreen> {
                                       subAssignments[index].id!);
                                 },
                                 leading: IconButton(
-                                    icon: const Icon(Icons.check_box),
+                                    icon:  Icon( subAssignments[index]
+                                                .subAssignmentDone ==
+                                            false
+                                        ? Icons.check_box_outline_blank:Icons.check_box),
                                     onPressed: () {
                                       provider.updateSubAssignment(
                                           subAssignments[index]);

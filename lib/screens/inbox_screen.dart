@@ -62,7 +62,7 @@ class _HomePageState extends State<HomePage> {
                                     width: 15,
                                   ),
                                   Text(
-                                    'Welcome : ',
+                                    'Hiba badawi : ',
                                     style: TextStyle(
                                         fontSize: 25,
                                         fontWeight: FontWeight.bold),
@@ -72,15 +72,11 @@ class _HomePageState extends State<HomePage> {
                               Row(
                                 children: const [
                                   Icon(
-                                    Icons.settings_outlined,
+                                    Icons.notification_important_outlined,
                                     color: Colors.white,
                                   ),
                                   SizedBox(
                                     width: 15,
-                                  ),
-                                  Icon(
-                                    Icons.search,
-                                    color: Colors.white,
                                   ),
                                 ],
                               )
@@ -133,7 +129,7 @@ class _HomePageState extends State<HomePage> {
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) =>
-                                          HomePage(title: "InBox"),
+                                          HomePage(title: "Inbox"),
                                     ),
                                   );
                                 },
@@ -180,6 +176,75 @@ class _HomePageState extends State<HomePage> {
                                     MaterialPageRoute(
                                       builder: (context) =>
                                           HomePage(title: "Personal"),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 10, horizontal: 5),
+                              child: ListTile(
+                                title: Text(
+                                  "Sports",
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                                leading: Icon(Icons.sports_basketball),
+                                iconColor: Colors.white,
+                                onTap: () {
+                                  Navigator.pop(context);
+                                  Navigator.pop(context);
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          HomePage(title: "Sports"),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 10, horizontal: 5),
+                              child: ListTile(
+                                title: Text(
+                                  "Social",
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                                leading: Icon(Icons.people),
+                                iconColor: Colors.white,
+                                onTap: () {
+                                  Navigator.pop(context);
+                                  Navigator.pop(context);
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          HomePage(title: "Social"),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 10, horizontal: 5),
+                              child: ListTile(
+                                title: Text(
+                                  "Health Care",
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                                leading: Icon(Icons.health_and_safety_outlined),
+                                iconColor: Colors.white,
+                                onTap: () {
+                                  Navigator.pop(context);
+                                  Navigator.pop(context);
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          HomePage(title: "Health Care"),
                                     ),
                                   );
                                 },
@@ -263,9 +328,10 @@ class _HomePageState extends State<HomePage> {
                                                     icon: const Icon(Icons
                                                         .check_box_outline_blank),
                                                     onPressed: () {
+                                                      print(assignments[index]
+                                                          .assignmentName);
                                                       provider.updateAssignment(
-                                                          provider.assignments[
-                                                              index]);
+                                                          assignments[index]);
                                                     },
                                                   ),
                                                   trailing: Text(
